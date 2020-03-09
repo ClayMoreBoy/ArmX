@@ -16,8 +16,8 @@ class ArmX_Plugin implements Typecho_Plugin_Interface
     const THUMB_FIELD_TYPE = 'str';
     const IMGPREFIX = 'img';
 
-    const IMGEXTS = array('jpg', 'jpeg', 'gif', 'png', 'tiff', 'bmp');
-    const APIS = array(
+    protected static $IMGEXTS = array('jpg', 'jpeg', 'gif', 'png', 'tiff', 'bmp');
+    protected static $APIS = array(
                 'user' => '用户, 支持 <code>login,logout,register,oauthLogin,oauthLogout,bindOAuth</code>',
                 'music' => '音乐, 支持 <code>search,song,album,playlist,artist,lyric,media,pic,url,top</code>',
                 'oauth' => '第三方登录, 支持 <code>qq,weibo,osc,github,alipay</code>'
@@ -350,7 +350,7 @@ SQL;
      */
     public static function isImage($ext)
     {
-        return in_array($ext, self::IMGEXTS);
+        return in_array($ext, self::$IMGEXTS);
     }
 
     /**
@@ -516,6 +516,7 @@ SQL;
         }
 
         $uploadDirDiv = new Typecho_Widget_Helper_Layout('div', array('class'=>'typecho-option', 'id' => 'uploadDir-option'));
+        $errorUploadDir = false;
         if (!empty($options->uploadDir) && defined('__TYPECHO_UPLOAD_DIR__') && $options->uploadDir!= __TYPECHO_UPLOAD_DIR__) {
             $errorUploadDir = _t('警告：请删除常量 %s 定义，或修改为 %s', '<code>__TYPECHO_UPLOAD_DIR__</code>', '<code>'.$options->uploadDir.'</code>');
         }
@@ -525,7 +526,7 @@ SQL;
 '.($errorUploadDir ? '<p class="message error">'.$errorUploadDir.'</p>':'').'
 ';
         $uploadDirDiv->html($uploadDirHTML);
-
+        $errorGravatarDir = false;
         $gravatarPrefixDiv = new Typecho_Widget_Helper_Layout('div', array('class'=>'typecho-option', 'id' => 'gravatarPrefix-option'));
         if (!empty($options->gravatarPrefix) && defined('__TYPECHO_GRAVATAR_PREFIX__') && $options->gravatarPrefix!= __TYPECHO_GRAVATAR_PREFIX__) {
             $errorGravatarDir = _t('警告：请删除常量 %s 定义，或修改为 %s', '<code>__TYPECHO_GRAVATAR_PREFIX__</code>', '<code>'.$options->gravatarPrefix.'</code>');
@@ -537,7 +538,7 @@ SQL;
 ';
         $gravatarPrefixDiv->html($gravatarPrefixHTML);
 
-        $api = new Typecho_Widget_Helper_Form_Element_Checkbox('api', self::APIS, $config->api, _t('启用API'));
+        $api = new Typecho_Widget_Helper_Form_Element_Checkbox('api', self::$APIS, $config->api, _t('启用API'));
         $api->multiMode();
 
         if (!empty($config->api) && !in_array('oauth', $config->api)) {
@@ -888,7 +889,7 @@ SQL;
      * @param  [type]                   $layout [description]
      * @return [type]                           [description]
      */
-    public static function getDefaultFieldItems(&$layout)
+    public static function getDefaultFieldItems( Typecho_Widget_Helper_Layout $layout)
     {
         $config = self::getConfig();
         $options = self::getOptions();

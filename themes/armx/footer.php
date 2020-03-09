@@ -167,10 +167,10 @@ var PLAYER = document.createElement('DIV');
     PLAYER.className = 'music-player';
     document.body.appendChild(PLAYER);
 new ArmPlayer(PLAYER, {
-  debug:true,
+  debug:false,
   source: {
      platform:'xiami',
-     list: 'top',
+     list: 'album:234282',
      apikey: function(){
         return window.__onece;
      }
